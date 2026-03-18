@@ -1,21 +1,22 @@
 #pragma once
 #include "../rack.h"
+#include "../module.h"
 #include <stdlib.h>
 
 typedef struct {
     ma_splitter_node node;
 } OutputData;
 
-static void outputSetVolume(void *data, float value) {
+static void output_set_volume(void *data, float value) {
     ma_node_set_output_bus_volume((ma_node *)&((OutputData *)data)->node, 0, value);
 }
 
-static void outputCleanup(Module *module) {
+static void output_cleanup(Module *module) {
     ma_splitter_node_uninit(&((OutputData *)module->data)->node, NULL);
     free(module->data);
 }
 
-static inline Module outputInit(Rack *rack, const char *label, float volume) {
+static inline Module output_init(Rack *rack, const char *label, float volume) {
     Module module = {0};
     OutputData *data = calloc(1, sizeof(OutputData));
     if (!data) return module;
@@ -37,10 +38,10 @@ static inline Module outputInit(Rack *rack, const char *label, float volume) {
     snprintf(module.label, MAX_NAME, "%s", label);
     module.data    = data;
     module.node    = (ma_node *)&data->node;
-    module.cleanup = outputCleanup;
+    module.cleanup = output_cleanup;
 
-    addValueField(&module, "volume", volume, 0.0f, 1.0f, 0.01f, outputSetVolume);
-    addPort      (&module, "in", PORT_IN, 0);
+    module_add_value_field(&module, "volume", volume, 0.0f, 1.0f, 0.01f, output_set_volume);
+    module_add_port       (&module, "in", PORT_IN, 0);
 
     return module;
 }

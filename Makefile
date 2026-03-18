@@ -8,7 +8,7 @@ TARGET = rack
 
 all: $(TARGET)
 
-# unity build: main.c #includes everything
+# unity build: main.c includes everything
 $(TARGET): main.c
 	$(CC) $(CFLAGS) -o $@ $< $(LIBS)
 

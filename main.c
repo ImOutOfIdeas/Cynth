@@ -1,7 +1,7 @@
 #define MINIAUDIO_IMPLEMENTATION
-#include "miniaudio.h"   // must come first, defines all miniaudio symbols
+#include "miniaudio.h"
 
-#include "rack.h"        // types everything else depends on
+#include "rack.h"
 #include "rack.c"
 
 #include "ui.h"
@@ -17,35 +17,35 @@
 
 int main(void) {
     Rack rack;
-    if (rackInit(&rack) != MA_SUCCESS) {
-        fprintf(stderr, "Failed to init rack\n");
+    if (rack_init(&rack) != MA_SUCCESS) {
+        fprintf(stderr, "failed to init rack\n");
         return 1;
     }
 
-    Module *oscillatorA = rackAddModule(&rack, oscillatorInit(&rack, "VCO A", ma_waveform_type_sine,     0.5f, 220.0f));
-    Module *oscillatorB = rackAddModule(&rack, oscillatorInit(&rack, "VCO B", ma_waveform_type_triangle,  0.5f, 330.0f));
-    Module *gainA       = rackAddModule(&rack, gainInit(&rack, "GAIN A", 0.4f));
-    Module *gainB       = rackAddModule(&rack, gainInit(&rack, "GAIN B", 0.4f));
-    Module *out         = rackAddModule(&rack, outputInit(&rack, "OUTPUT", 0.8f));
+    Module *oscillator_a = rack_add_module(&rack, oscillator_init(&rack, "VCO A", ma_waveform_type_sine,     0.5f, 220.0f));
+    Module *oscillator_b = rack_add_module(&rack, oscillator_init(&rack, "VCO B", ma_waveform_type_triangle, 0.5f, 330.0f));
+    Module *gain_a       = rack_add_module(&rack, gain_init(&rack, "GAIN A", 0.4f));
+    Module *gain_b       = rack_add_module(&rack, gain_init(&rack, "GAIN B", 0.4f));
+    Module *output       = rack_add_module(&rack, output_init(&rack, "OUTPUT", 0.8f));
 
-    if (!oscillatorA || !oscillatorB || !gainA || !gainB || !out) {
-        fprintf(stderr, "Module init failed\n");
-        rackFree(&rack);
+    if (!oscillator_a || !oscillator_b || !gain_a || !gain_b || !output) {
+        fprintf(stderr, "module init failed\n");
+        rack_free(&rack);
         return 1;
     }
 
-    rackConnect(oscillatorA, 0, gainA, 0);
-    rackConnect(oscillatorB, 0, gainB, 0);
-    rackConnect(gainA, 0, out, 0);
-    rackConnect(gainB, 0, out, 0);
+    rack_connect(oscillator_a, 0, gain_a, 0);
+    rack_connect(oscillator_b, 0, gain_b, 0);
+    rack_connect(gain_a, 0, output, 0);
+    rack_connect(gain_b, 0, output, 0);
 
-    uiInit();
+    ui_init();
     while (1) {
-        uiDraw(&rack);
-        if (inputHandle(uiPollKey(), &rack)) break;
+        ui_draw(&rack);
+        if (input_handle(ui_poll_key(), &rack)) break;
         ma_sleep(16);
     }
-    uiFree();
-    rackFree(&rack);
+    ui_free();
+    rack_free(&rack);
     return 0;
 }

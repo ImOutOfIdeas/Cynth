@@ -1,14 +1,15 @@
 #include "rack.h"
+#include <string.h>
 
-ma_result rackInit(Rack *rack) {
+ma_result rack_init(Rack *rack) {
     memset(rack, 0, sizeof(*rack));
     ma_engine_config config = ma_engine_config_init();
     return ma_engine_init(&config, &rack->engine);
 }
 
-void rackFree(Rack *rack) {
+void rack_free(Rack *rack) {
     /* free in reverse so outputs are cleaned before their inputs */
-    for (int i = rack->moduleCount - 1; i >= 0; i--) {
+    for (int i = rack->module_count - 1; i >= 0; i--) {
         Module *module = &rack->modules[i];
         if (module->cleanup) module->cleanup(module);
     }
@@ -16,25 +17,20 @@ void rackFree(Rack *rack) {
     memset(rack, 0, sizeof(*rack));
 }
 
-Module *rackAddModule(Rack *rack, Module module) {
-    if (rack->moduleCount >= MAX_MODULES) return NULL;
-    rack->modules[rack->moduleCount++] = module;
-    return &rack->modules[rack->moduleCount - 1];
+Module *rack_add_module(Rack *rack, Module module) {
+    if (rack->module_count >= MAX_MODULES) return NULL;
+    rack->modules[rack->module_count++] = module;
+    return &rack->modules[rack->module_count - 1];
 }
 
-void rackSwapModules(Rack *rack, int indexA, int indexB) {
-    if (indexA < 0 || indexB < 0) return;
-    if (indexA >= rack->moduleCount || indexB >= rack->moduleCount) return;
-    Module temp            = rack->modules[indexA];
-    rack->modules[indexA]  = rack->modules[indexB];
-    rack->modules[indexB]  = temp;
+void rack_swap_modules(Rack *rack, int index_a, int index_b) {
+    if (index_a < 0 || index_b < 0) return;
+    if (index_a >= rack->module_count || index_b >= rack->module_count) return;
+    Module temp               = rack->modules[index_a];
+    rack->modules[index_a]    = rack->modules[index_b];
+    rack->modules[index_b]    = temp;
 }
 
-ma_result rackConnect(Module *source, int sourceBus, Module *dest, int destBus) {
-    return ma_node_attach_output_bus(source->node, sourceBus, dest->node, destBus);
-}
-
-ma_result rackConnectToOutput(Rack *rack, Module *source, int sourceBus) {
-    return ma_node_attach_output_bus(source->node, sourceBus,
-                                     ma_engine_get_endpoint(&rack->engine), 0);
+ma_result rack_connect(Module *source, int source_bus, Module *dest, int dest_bus) {
+    return ma_node_attach_output_bus(source->node, source_bus, dest->node, dest_bus);
 }
