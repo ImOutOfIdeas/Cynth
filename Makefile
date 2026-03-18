@@ -4,7 +4,7 @@ LIBS   = -lpthread -ldl -lm -lncursesw
 
 # macOS: LIBS = -lpthread -lm -lncursesw -framework CoreAudio -framework AudioToolbox -framework AudioUnit
 
-TARGET = rack_synth
+TARGET = cynth
 
 all: $(TARGET)
 
