@@ -4,14 +4,14 @@
 #include <locale.h>
 #include "rack.h"
 
-#define MODULE_WIDTH  24
-#define MODULE_HEIGHT 16
-#define GRID_COLUMNS   4
+#define MODULE_WIDTH   24
+#define MODULE_HEIGHT  16
+#define GRID_COLUMNS    4
 
-extern int cursorIndex;     /* which module is focused */
-extern int selectedField;   /* -1 = no field selected, >= 0 = field index */
+extern int cursor_index;
+extern int selected_field;
 
-void uiInit(void);
-void uiFree(void);
-void uiDraw(Rack *rack);
-int  uiPollKey(void);
+void ui_init(void);
+void ui_free(void);
+void ui_draw(Rack *rack);
+int  ui_poll_key(void);
